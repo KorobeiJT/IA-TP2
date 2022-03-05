@@ -13,7 +13,7 @@ grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 
-def printGrid():
+def printGrid(grid):
     for i in range(9):
         for j in range(9):
             print( str(grid[i][j]) + " ", end="")
@@ -22,4 +22,3 @@ def printGrid():
         print()
         if (i%3==2 and i!=8):
             print("- - - - - - - - - - -")
-printGrid()
