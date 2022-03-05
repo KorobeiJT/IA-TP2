@@ -1,7 +1,6 @@
 import random
 from random import randint, shuffle
 from algo import AC3, backtrack
-import contrainte
 from csp import CSP
 grid2 = []
 
@@ -67,36 +66,41 @@ def AC3NotEnough(csp):
     return assignment
 
 
-def main():  
-    choice = input ("Random initial grid (1) or chosen from txt file (2)?: ")
-    if (choice == "2"):
-        grid2 = getGridFromFile()
-        printGrid(grid2)
-    else:
-        grid2 = randomGridGenerate()
-        printGrid(grid2)
+def CommitSudoku():  
+    if AC3(csp):
+        print("AC-3 finished!")
+        isFinished=True
+        for values in csp.possibilities.values():
+            if(len(values)>1):
+                isFinished=False
+                break
 
-    csp = CSP()
-    csp.coord=contrainte.genCoordinates()
-    csp.clashingCells= contrainte.genConstraint(csp.coord)
-    csp.binaryConstraint= contrainte.genBinaryConstraints(csp.clashingCells)
-    csp.possibilities=contrainte.genPossibleValues(grid2, csp.coord, csp.clashingCells)
+        if isFinished:
+            print("Result:")
+            for keys, values in csp.possibilities.items():  
+                grid2[keys[0]][keys[1]]=values[0]
+            printGrid(grid2)
+        else:
+            print("Starting backtracking...")
+            assignement= AC3NotEnough(csp)
+            print("Result:")
+            for key, value in assignement.items():  
+                grid2[key[0]][key[1]]=value
+            printGrid(grid2)
 
-    AC3(csp)
 
-    isFinished=True
-    for values in csp.possibilities.values():
-        if(len(values)>1):
-            isFinished=False
-            break
-    
-    if isFinished:
-        for keys, values in csp.possibilities.items():  
-            grid2[keys[0]][keys[1]]=values[0]
-        printGrid(grid2)
-    else:
-        assignement= AC3NotEnough(csp)
-        for key, value in assignement.items():  
-            grid2[key[0]][key[1]]=value
-        printGrid(grid2)
-main()
+
+choice = input ("Random initial grid (1) or chosen from txt file (2)?: ")
+if (choice == "2"):
+    grid2 = getGridFromFile()
+    printGrid(grid2)
+else:
+    grid2 = randomGridGenerate()
+    printGrid(grid2)
+
+csp = CSP()
+csp.genCoordinates()
+csp.genConstraint()
+csp.genBinaryConstraints()
+csp.genPossibleValues(grid2)
+CommitSudoku()

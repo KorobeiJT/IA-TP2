@@ -1,7 +1,7 @@
 def AC3(csp, queue=None):
 
     if queue == None:
-        queue = list(csp.binaryConstraint)
+        queue = csp.binaryConstraint
 
     while queue:
 
