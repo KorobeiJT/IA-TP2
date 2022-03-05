@@ -1,9 +1,8 @@
 import random
-import turtle
 from random import randint, shuffle
-from time import sleep
-import createSudoku 
-
+from algo import AC3, backtrack
+import contrainte
+from csp import CSP
 grid2 = []
 
 def randomGridGenerate():
@@ -49,6 +48,25 @@ def printGrid(grille):
         if (i%3==2 and i!=8):
             print("- - - - - - - - - - -")
 
+
+def AC3NotEnough(csp):
+
+    assignment = {}
+
+    for cell in csp.coord:
+        if len(csp.possibilities[cell]) == 1:
+            assignment[cell] = csp.possibilities[cell][0]
+    
+    unassigned = []
+    for cell in csp.coord:
+        if cell not in assignment:
+            unassigned.append(cell)
+
+    assignment = backtrack(assignment, csp, unassigned)
+    
+    return assignment
+
+
 def main():  
     choice = input ("Random initial grid (1) or chosen from txt file (2)?: ")
     if (choice == "2"):
@@ -58,4 +76,27 @@ def main():
         grid2 = randomGridGenerate()
         printGrid(grid2)
 
+    csp = CSP()
+    csp.coord=contrainte.genCoordinates()
+    csp.clashingCells= contrainte.genConstraint(csp.coord)
+    csp.binaryConstraint= contrainte.genBinaryConstraints(csp.clashingCells)
+    csp.possibilities=contrainte.genPossibleValues(grid2, csp.coord, csp.clashingCells)
+
+    AC3(csp)
+
+    isFinished=True
+    for values in csp.possibilities.values():
+        if(len(values)>1):
+            isFinished=False
+            break
+    
+    if isFinished:
+        for keys, values in csp.possibilities.items():  
+            grid2[keys[0]][keys[1]]=values[0]
+        printGrid(grid2)
+    else:
+        assignement= AC3NotEnough(csp)
+        for key, value in assignement.items():  
+            grid2[key[0]][key[1]]=value
+        printGrid(grid2)
 main()
